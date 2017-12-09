@@ -1,0 +1,32 @@
+{
+  "name": "SpriteSheetDemo",
+  "version": "1.0.0",
+  "description": "雪碧图高效开发流程演示项目",
+  "main": "index.html",
+  "homepage": "https://github.com/txiejun/SpriteSheetDemo",
+  "scripts": {
+    "start":"http-server -p 80"
+  },
+  "author": {
+    "name": "txiejun",
+    "email": "txiejun@126.com",
+    "url": "https://github.com/txiejun/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/txiejun/SpriteSheetDemo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/txiejun/SpriteSheetDemo/issues"
+  },
+  "license": "ISC",
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "keywords": [
+    "spritesheet",
+    "TexturePacker",
+    "css",
+    "Koala"
+  ]
+}

@@ -1,9 +1,9 @@
 {
-  "name": "SpriteSheetDemo",
+  "name": "websockt-demo",
   "version": "1.0.0",
-  "description": "雪碧图高效开发流程演示项目",
+  "description": "web实时通信深度剖析",
   "main": "index.html",
-  "homepage": "https://github.com/txiejun/SpriteSheetDemo",
+  "homepage": "https://github.com/txiejun/websocket-demo",
   "scripts": {
     "start":"http-server -p 80"
   },
@@ -14,19 +14,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/txiejun/SpriteSheetDemo.git"
+    "url": "https://github.com/txiejun/websocket-demo.git"
   },
   "bugs": {
-    "url": "https://github.com/txiejun/SpriteSheetDemo/issues"
+    "url": "https://github.com/txiejun/websocket-demo/issues"
   },
-  "license": "ISC",
+  "license": "MIT",
   "engines": {
     "node": ">= 0.10.0"
   },
   "keywords": [
-    "spritesheet",
-    "TexturePacker",
-    "css",
-    "Koala"
+    "websocket",
+    "socket",
+    "real time",
+    "communication"
   ]
 }

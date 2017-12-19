@@ -70,7 +70,7 @@ protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 - 优点：长连接，双向、低延迟和易于处理错误。实现真正的即时通信
 - 缺点：部分浏览器不支持。
 浏览器支持情况：
-
+![浏览器支持情况](./docs/ws.jpg)
 
 
 ### socket.io

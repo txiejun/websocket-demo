@@ -71,16 +71,139 @@ protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 - 缺点：部分浏览器不支持。
 浏览器支持情况：
 ![浏览器支持情况](./docs/ws.jpg)
+示例代码：https://github.com/theturtle32/WebSocket-Node
+客户端代码：
+
+```
+window.onload=function(){
+        var ws=new WebSocket("ws://127.0.0.1:8088");
+        var oText=document.getElementById('message');
+        var oSend=document.getElementById('send');
+        var oClose=document.getElementById('close');
+        var oUl=document.getElementsByTagName('ul')[0];
+        ws.onopen=function(){
+            oSend.onclick=function(){
+                if(!/^\s*$/.test(oText.value)){
+                    ws.send(oText.value);
+                }
+            };
+ 
+        };
+        ws.onmessage=function(msg){
+          var str="<li>"+msg.data+"</li>";
+          oUl.innerHTML+=str;
+        };
+        ws.onclose=function(e){
+            console.log("已断开与服务器的连接");
+            ws.close();
+        }
+    }
+```
+
+服务器代码：
+```
+//握手成功之后就可以发送数据了
+var crypto = require('crypto');
+var WS = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
+var server=require('net').createServer(function (socket) {
+    var key;
+    socket.on('data', function (msg) {
+        if (!key) {
+            //获取发送过来的Sec-WebSocket-key首部
+            key = msg.toString().match(/Sec-WebSocket-Key: (.+)/)[1];
+            key = crypto.createHash('sha1').update(key + WS).digest('base64');
+            socket.write('HTTP/1.1 101 Switching Protocols\r\n');
+            socket.write('Upgrade: WebSocket\r\n');
+            socket.write('Connection: Upgrade\r\n');
+            //将确认后的key发送回去
+            socket.write('Sec-WebSocket-Accept: ' + key + '\r\n');
+            //输出空行，结束Http头
+            socket.write('\r\n');
+        } else {
+            var msg=decodeData(msg);
+            console.log(msg);
+            //如果客户端发送的操作码为8,表示断开连接,关闭TCP连接并退出应用程序
+            if(msg.Opcode==8){
+                socket.end();
+                server.unref();
+            }else{
+                socket.write(encodeData({FIN:1,
+                    Opcode:1,
+                    PayloadData:"接受到的数据为"+msg.PayloadData}));
+            }
+ 
+        }
+    });
+});
+    server.listen(8000,'localhost');
+//按照websocket数据帧格式提取数据
+function decodeData(e){
+    var i=0,j,s,frame={
+        //解析前两个字节的基本数据
+        FIN:e[i]>>7,Opcode:e[i++]&15,Mask:e[i]>>7,
+        PayloadLength:e[i++]&0x7F
+    };
+    //处理特殊长度126和127
+    if(frame.PayloadLength==126)
+        frame.length=(e[i++]<<8)+e[i++];
+    if(frame.PayloadLength==127)
+        i+=4, //长度一般用四字节的整型，前四个字节通常为长整形留空的
+            frame.length=(e[i++]<<24)+(e[i++]<<16)+(e[i++]<<8)+e[i++];
+    //判断是否使用掩码
+    if(frame.Mask){
+        //获取掩码实体
+        frame.MaskingKey=[e[i++],e[i++],e[i++],e[i++]];
+        //对数据和掩码做异或运算
+        for(j=0,s=[];j<frame.PayloadLength;j++)
+            s.push(e[i+j]^frame.MaskingKey[j%4]);
+    }else s=e.slice(i,frame.PayloadLength); //否则直接使用数据
+    //数组转换成缓冲区来使用
+    s=new Buffer(s);
+    //如果有必要则把缓冲区转换成字符串来使用
+    if(frame.Opcode==1)s=s.toString();
+    //设置上数据部分
+    frame.PayloadData=s;
+    //返回数据帧
+    return frame;
+}
+//对发送数据进行编码
+function encodeData(e){
+    var s=[],o=new Buffer(e.PayloadData),l=o.length;
+    //输入第一个字节
+    s.push((e.FIN<<7)+e.Opcode);
+    //输入第二个字节，判断它的长度并放入相应的后续长度消息
+    //永远不使用掩码
+    if(l<126)s.push(l);
+    else if(l<0x10000)s.push(126,(l&0xFF00)>>2,l&0xFF);
+    else s.push(
+            127, 0,0,0,0, //8字节数据，前4字节一般没用留空
+                (l&0xFF000000)>>6,(l&0xFF0000)>>4,(l&0xFF00)>>2,l&0xFF
+        );
+    //返回头部分和数据部分的合并缓冲区
+    return Buffer.concat([new Buffer(s),o]);
+}
+```
+
+https://zh.scribd.com/document/60898569/WebSockets-The-Real-Time-Web-Delivered
 
 
 ### socket.io
+socket.io 是一个为实时应用提供跨平台实时通信的库。socket.io 旨在使实时应用在每个浏览器和移动设备上成为可能，模糊不同的传输机制之间的差异。
+socket.io 的名字源于它使用了浏览器支持并采用的 HTML5 WebSocket 标准，因为并不是所有的浏览器都支持 WebSocket ，所以该库支持一系列降级功能：
+- Websocket
+- Adobe® Flash® Socket
+- AJAX long polling
+- AJAX multipart streaming
+- Forever Iframe
+- JSONP Polling
 
-Adobe® Flash® Socket
-AJAX long polling
-AJAX multipart streaming
-Forever Iframe
-JSONP Polling
+在大部分情境下，你都能通过这些功能选择与浏览器保持类似长连接的功能。
 
+https://github.com/nswbmw/N-chat/wiki/%E7%AC%AC%E4%B8%80%E7%AB%A0-socket.io-%E7%AE%80%E4%BB%8B%E5%8F%8A%E4%BD%BF%E7%94%A8
+
+###  技术选型建议
+对于实时性要求高和并发量大的应用，建议方案：
+https://github.com/mrniko/netty-socketio
 心跳
 三次握手
 

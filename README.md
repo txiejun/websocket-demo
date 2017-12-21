@@ -272,13 +272,13 @@ io.on('connection', function (socket) {
 
 ##### websocket框架实现
 常用的 Node 实现有以下几种。
-[µWebSockets](https://github.com/uNetworking/uWebSockets)
-[Socket.IO](https://socket.io/)
-[WebSocket-Node](https://github.com/theturtle32/WebSocket-Node)
-[websocketd](http://websocketd.com/)
+- [µWebSockets](https://github.com/uNetworking/uWebSockets)
+- [Socket.IO](https://socket.io/)
+- [WebSocket-Node](https://github.com/theturtle32/WebSocket-Node)
+- [websocketd](http://websocketd.com/)
 
 Java实现：
-[netty-socketio](https://github.com/mrniko/netty-socketio)
+- [netty-socketio](https://github.com/mrniko/netty-socketio)
 
 
 

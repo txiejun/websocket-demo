@@ -189,7 +189,7 @@ CLOSED：3，连接已经关闭，或者打开连接失败。
 ###### webSocket.onerror
 用于指定报错时的回调函数。
 
-#### socket.io
+#### socket.io（推荐）
 
 socket.io 是一个为实时应用提供跨平台实时通信的库。socket.io 旨在使实时应用在每个浏览器和移动设备上成为可能，模糊不同的传输机制之间的差异。
 socket.io 的名字源于它使用了浏览器支持并采用的 HTML5 WebSocket 标准，因为并不是所有的浏览器都支持 WebSocket ，所以该库支持一系列降级功能：

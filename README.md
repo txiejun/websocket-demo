@@ -97,6 +97,7 @@ package test{
 WebSocket是HTML5开始提供的一种浏览器与服务器间进行全双工通讯的网络技术。依靠这种技术可以实现客户端和服务器端的长连接，双向实时通信。
 - 优点：较少的控制开销、更强的实时性、长连接，双向通信、更好的二进制支持。与 HTTP 协议有着良好的兼容性。默认端口也是80和443，并且握手阶段采用 HTTP 协议，因此握手时不容易屏蔽，能通过各种 HTTP 代理服务器。
 - 缺点：部分浏览器不支持（支持的浏览器会越来越多）。
+- 适用于：较新浏览器下，希望自由度较大能自定义协议的情景，服务器不受框架限制。
 
 浏览器支持情况：
 
@@ -142,20 +143,20 @@ Sec-WebSocket-Accept：服务器端将加密处理后的握手Key通过这个字
 ##### 客户端代码示例：
 
 ```
-var ws = new WebSocket("ws://echo.websocket.org");
-ws.onopen = function(evt) { 
-  console.log("Connection open ..."); 
-  ws.send("Hello WebSockets!");
+var socket = new WebSocket("ws://localhost:8080");
+socket.onopen = function(evt) { 
+  console.log("socket is open"); 
+  socket.send("Hello World!");
 };
-ws.onmessage = function(evt) {
-  console.log( "Received Message: " + evt.data);
-  ws.close();
+socket.onmessage = function(evt) {
+  console.log( "Received data: " + evt.data);
+  socket.close();
 };
-ws.onerror = function(evt) {
+socket.onerror = function(evt) {
     console.log( "websocket error:" + evt.message);
 };
-ws.onclose = function(evt) {
-  console.log("Connection closed.");
+socket.onclose = function(evt) {
+  console.log("socket is closed.");
 };
 ```
 
@@ -163,14 +164,14 @@ ws.onclose = function(evt) {
 websocket所有API详见[这里](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)
 
 ###### WebSocket构造函数
-
+var socket = new WebSocket("ws://localhost:8080");
 
 ###### webSocket.readyState
 ```
-CONNECTING：值为0，表示正在连接。
-OPEN：值为1，表示连接成功，可以通信了。
-CLOSING：值为2，表示连接正在关闭。
-CLOSED：值为3，表示连接已经关闭，或者打开连接失败。
+CONNECTING：0，正在连接。
+OPEN：1，连接成功，可以通信了。
+CLOSING：2，连接正在关闭。
+CLOSED：3，连接已经关闭，或者打开连接失败。
 ```
 
 ###### webSocket.onopen
@@ -189,6 +190,7 @@ CLOSED：值为3，表示连接已经关闭，或者打开连接失败。
 用于指定报错时的回调函数。
 
 #### socket.io
+
 socket.io 是一个为实时应用提供跨平台实时通信的库。socket.io 旨在使实时应用在每个浏览器和移动设备上成为可能，模糊不同的传输机制之间的差异。
 socket.io 的名字源于它使用了浏览器支持并采用的 HTML5 WebSocket 标准，因为并不是所有的浏览器都支持 WebSocket ，所以该库支持一系列降级功能：
 - Websocket
@@ -199,20 +201,85 @@ socket.io 的名字源于它使用了浏览器支持并采用的 HTML5 WebSocket
 - JSONP Polling
 
 在大部分情境下，你都能通过这些功能选择与浏览器保持类似长连接的功能。
+- 优点：跨平台、兼容性好、具有降级功能、所有传输机制接口对外统一。
+- 缺点：要使用socket.io必须前后端都要用一套框架。
+- 适用于：考虑更多兼容性，后端可以使用基于socket.io的框架的情景。（常见服务端实现框架有node.js,Netty-socket.io）
 
-https://github.com/nswbmw/N-chat/wiki/%E7%AC%AC%E4%B8%80%E7%AB%A0-socket.io-%E7%AE%80%E4%BB%8B%E5%8F%8A%E4%BD%BF%E7%94%A8
+客户端代码示例：
 
-##### 服务端的实现
+```
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io('http://localhost');
+  socket.on('news', function (data) {
+    console.log(data);
+    socket.emit('my other event', { my: 'data' });
+  });
+</script>
+```
+服务器端示例代码：
+```
+var app = require('http').createServer(handler)
+var io = require('socket.io')(app);
+var fs = require('fs');
+
+app.listen(80);
+
+function handler (req, res) {
+  fs.readFile(__dirname + '/index.html',
+  function (err, data) {
+    if (err) {
+      res.writeHead(500);
+      return res.end('Error loading index.html');
+    }
+
+    res.writeHead(200);
+    res.end(data);
+  });
+}
+
+io.on('connection', function (socket) {
+  socket.emit('news', { hello: 'world' });
+  socket.on('my other event', function (data) {
+    console.log(data);
+  });
+});
+```
+##### 客户端核心API
+socket.io所有API详见[这儿](https://socket.io/docs/)
+###### io.connect 建立一个连接
+`var socket = io.connect('ws://127.0.0.1:3000');`
+
+###### socket.emit 发送一个事件给服务器端（发送数据）
+
+###### socket.on 监听一个服务器端emit发送的事件（接收数据）
+
+###### 三种默认的事件（客户端和服务器都有）：connect 、message 、disconnect。
+
+##### 服务器端核心API
+###### io.on 监听客户端的连接事件
+```
+io.on('connection', function (socket) {
+}
+```
+
+###### socket.emit 发送一个事件给客户端（推送数据）
+
+###### socket.on 监听一个客户端emit发送的事件（接收数据）
+
+
+[聊天demo](https://socket-io-chat.now.sh/)
+
+##### websocket框架实现
 常用的 Node 实现有以下几种。
 [µWebSockets](https://github.com/uNetworking/uWebSockets)
 [Socket.IO](https://socket.io/)
 [WebSocket-Node](https://github.com/theturtle32/WebSocket-Node)
 [websocketd](http://websocketd.com/)
 
-###  技术选型建议
-对于实时性要求高和并发量大的应用，建议方案：
-https://github.com/mrniko/netty-socketio
-心跳
+Java实现：
+[netty-socketio](https://github.com/mrniko/netty-socketio)
+
 
 
 

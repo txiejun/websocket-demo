@@ -39,6 +39,59 @@
 - 优点：实现真正的即时通信，而不是伪即时。
 - 缺点：客户端必须安装Flash插件；非HTTP协议，无法自动穿越防火墙。
 
+代码示例：
+```
+package test{
+    import flash.net.Socket;
+    import flash.events.Event;
+    import flash.events.IOErrorEvent;
+    import flash.events.ProgressEvent;
+    import flash.events.SecurityErrorEvent;
+
+    public class FlashSocket{
+        private var _socket:Socket = null;
+
+        /**
+         * 连接socket
+         * @param host 主机地址
+         * @param port 端口
+         */
+        public function FlashSocket(host:String, port:int) {
+            _socket = new Socket();
+            _socket.addEventListener(Event.CONNECT, connectHandler);
+            _socket.addEventListener(ProgressEvent.SOCKET_DATA, onSocketData);
+            _socket.addEventListener(Event.CLOSE, closeHandler);
+            _socket.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+            _socket.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
+            _socket.connect(host, port);
+        }
+
+        private function connectHandler(event:Event):void{
+            trace("socket is open");
+        }
+        /**
+         * 接收Flash Socket数据
+         * @param event
+         */
+        private function onSocketData(event:Event):void{
+            if (_lastData.bytesAvailable > 0){
+                //_socket.readBytes(_totalData, _totalData.length, _socket.bytesAvailable);
+            }
+        }
+        private function closeHandler(event:Event):void{
+            trace("socket is closed");
+        }
+        private function ioErrorHandler(event:IOErrorEvent):void{
+            trace("socket io error");
+        }
+        private function securityErrorHandler(event:Event):void{
+            trace("socket security error");
+        }
+    }
+}
+```
+
+
 ### 解决方案（推荐）
 #### Websocket
 WebSocket是HTML5开始提供的一种浏览器与服务器间进行全双工通讯的网络技术。依靠这种技术可以实现客户端和服务器端的长连接，双向实时通信。

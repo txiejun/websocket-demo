@@ -7,7 +7,7 @@
 以下就介绍几种通过hack手段实现的web即时通信方案。
 #### Ajax JSONP Polling（短轮询）
 **实现思路**：客户端通过Ajax（jsonp实现跨域）的方式每隔一小段时间发送一个请求到服务器，服务器立刻返回数据。
-![polling](./docs/polling.jpg)
+![polling](./docs/polling.png)
 
 - 优点：短连接，服务器处理简单，支持跨域。
 - 缺点：有一定延迟、服务器压力较大，浪费带宽流量。

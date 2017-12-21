@@ -14,7 +14,7 @@
 
 #### Ajax Long Polling(长轮询)
 **实现思路**：客户端通过Ajax（jsonp实现跨域）发起请求（request），服务器不马上返回，而是保持住这个连接，直到有数据要推送给客户端时（或time out)才发送响应（response）给客户端。客户端收到响应之后马上再发起一个新的请求给服务器，周而复始。
-![polling](./docs/longpolling.jpg)
+![polling](./docs/longpolling.png)
 
 - 优点：减少轮询次数，低延迟，浏览器兼容性较好。
 - 缺点：服务器需要保持大量连接。

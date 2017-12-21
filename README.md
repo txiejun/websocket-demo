@@ -102,11 +102,12 @@ WebSocket是HTML5开始提供的一种浏览器与服务器间进行全双工通
 
 ![浏览器支持情况](./docs/ws.jpg)
 
-##### 握手
-**基于HTTP的握手请求（Opening & Closing Handshake）**
+##### 握手（handshake）
+**基于HTTP的握手请求**
+
 Http、WebSocket等协议属于应用层协议，IP协议工作在网络层，TCP协议工作在传输层。HTTP、WebSocket等应用层协议，都是基于TCP协议来传输数据的。对于WebSocket来说，它必须依赖Http协议进行一次握手，握手成功后，数据就直接从TCP通道传输，与Http无关了（*WebSocket连接只需一次成功握手即可建立*）。
 
-![websocket握手](./docs/websockt.png)
+![websocket握手](./docs/websocket.png)
 
 **1、发送握手请求**
 客户端到服务器的握手请求：

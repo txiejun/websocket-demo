@@ -6,12 +6,12 @@
  */
 
 window.onload=function(){
-    var ws=new WebSocket("ws://127.0.0.1:8088");
+    var ws=new WebSocket("ws://localhost:8080");
     var oText=document.getElementById('message');
     var oSend=document.getElementById('send');
-    var oClose=document.getElementById('close');
     var oUl=document.getElementsByTagName('ul')[0];
     ws.onopen=function(){
+        ws.send("hello world");
         oSend.onclick=function(){
             if(!/^\s*$/.test(oText.value)){
                 ws.send(oText.value);
@@ -20,6 +20,8 @@ window.onload=function(){
 
     };
     ws.onmessage=function(msg){
+        console.log("msg:"+msg)
+
         var str="<li>"+msg.data+"</li>";
         oUl.innerHTML+=str;
     };

@@ -7,14 +7,24 @@
 
 //握手成功之后就可以发送数据了
 var crypto = require('crypto');
+var net = require("net");
+var port = 8080;
+
 var WS = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
-var server=require('net').createServer(function (socket) {
+
+var server = net.createServer(function (socket) {
     var key;
     socket.on('data', function (msg) {
+        console.log("msg1:\n"+msg);
+
         if (!key) {
+            //握手
             //获取发送过来的Sec-WebSocket-key首部
             key = msg.toString().match(/Sec-WebSocket-Key: (.+)/)[1];
+            console.log("key:"+key);
+
             key = crypto.createHash('sha1').update(key + WS).digest('base64');
+            console.log("key2:"+key);
             socket.write('HTTP/1.1 101 Switching Protocols\r\n');
             socket.write('Upgrade: WebSocket\r\n');
             socket.write('Connection: Upgrade\r\n');
@@ -22,14 +32,16 @@ var server=require('net').createServer(function (socket) {
             socket.write('Sec-WebSocket-Accept: ' + key + '\r\n');
             //输出空行，结束Http头
             socket.write('\r\n');
-        } else {
+        }
+        else{
             var msg=decodeData(msg);
-            console.log(msg);
+            console.log("PayloadData:"+msg.PayloadData);
             //如果客户端发送的操作码为8,表示断开连接,关闭TCP连接并退出应用程序
             if(msg.Opcode==8){
                 socket.end();
                 server.unref();
-            }else{
+            }
+            else{
                 socket.write(encodeData({FIN:1,
                     Opcode:1,
                     PayloadData:"接受到的数据为"+msg.PayloadData}));
@@ -38,7 +50,15 @@ var server=require('net').createServer(function (socket) {
         }
     });
 });
-server.listen(8000,'localhost');
+
+server.on("error", function(err){
+    console.log("error:"+err);
+});
+
+server.listen(port,'localhost', function(){
+    console.log("server is start at port:"+port);
+});
+
 //按照websocket数据帧格式提取数据
 function decodeData(e){
     var i=0,j,s,frame={
@@ -69,6 +89,7 @@ function decodeData(e){
     //返回数据帧
     return frame;
 }
+
 //对发送数据进行编码
 function encodeData(e){
     var s=[],o=new Buffer(e.PayloadData),l=o.length;

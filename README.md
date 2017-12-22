@@ -156,8 +156,8 @@ Sec-WebSocket-Protocol: chat, superchat
 Sec-WebSocket-Version: 13
 ```
 字段：
-Origin：用来防止跨域攻击
-Sec-WebSocket-Key：是服务器端需要使用客户端发送的这个Key进行校验，然后返回一个校验过的字符串给客户端，客户端验证通过后才能正式建立Socket连接
+- Origin：用来防止跨域攻击  
+- Sec-WebSocket-Key：是服务器端需要使用客户端发送的这个Key进行校验，然后返回一个校验过的字符串给客户端，客户端验证通过后才能正式建立Socket连接
 
 **2、返回握手应答**
 服务器返回正确的相应头后，客户端验证后将建立连接，此时状态为OPEN。
@@ -171,7 +171,7 @@ Sec-WebSocket-Protocol: chat
 ```
 
 字段：
-Sec-WebSocket-Accept：服务器端将加密处理后的握手Key通过这个字段返回给客户端表示服务器同意握手建立连接。
+- Sec-WebSocket-Accept：服务器端将加密处理后的握手Key通过这个字段返回给客户端表示服务器同意握手建立连接。
 
 ##### 心跳（heartbeat）
 握手成功后，客户端和服务器端任何一方都可以间隔一定时间发送ping请求到另外一方，当ping请求到达另外一方后，对方马上发送pong应答消息，通过这种方式确保连接的存在，也可以在极端情况下（如拔网线）知道连接是否断开。
